@@ -97,11 +97,12 @@ class SefaExtension:
         sliders = [
             widgets.FloatSlider(
                 value=0.0,
-                min=-5.0,
-                max=5.0,
+                min=-10.0,
+                max=10.0,
                 step=0.5,
                 description=direction_labels.get(i, f"Dir {i}"),
-                layout=widgets.Layout(width='80%')  # ⬅️ THIS LINE fixes it
+                style={'description_width': 'initial'}, 
+                layout=widgets.Layout(width='80%')
             )
             for i in range(num_directions)
         ]
