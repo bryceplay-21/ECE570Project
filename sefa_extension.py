@@ -92,11 +92,11 @@ class SefaExtension:
         return results
 
     def launch_interactive_ui(self, num_directions=3):
-        direction_labels = {0: "Pose", 1: "Age", 2: "Smile"}
+        direction_labels = {0: "Pose(Head Left -> Head Right)", 1: "Age(Old -> Young)", 2: "Smile(Smile -> Neutral)"}
 
         sliders = [
             widgets.FloatSlider(
-                value=0.0, min=-3.0, max=3.0, step=0.5,
+                value=0.0, min=-5.0, max=5.0, step=0.5,
                 description=f'{direction_labels.get(i, f"Dir {i}")}'
             )
             for i in range(num_directions)
