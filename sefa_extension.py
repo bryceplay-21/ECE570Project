@@ -44,10 +44,14 @@ class SefaExtension:
 
     def edit_latent_code(self, z, direction_weights):
         w = self.generator.mapping(z, None)
+        batch, num_layers, latent_dim = w.shape  # Get actual shape from the generator
+    
         for idx, weight in direction_weights.items():
             direction = torch.tensor(self.directions[idx], device=self.device).float()
-            direction_reshaped = direction[:self.num_layers * self.latent_dim].reshape(self.num_layers, self.latent_dim)
+            direction = direction[:num_layers * latent_dim]  # Slice just enough
+            direction_reshaped = direction.reshape(num_layers, latent_dim)
             w = w + weight * direction_reshaped.unsqueeze(0)
+    
         return w
 
     def generate_images(self, num_samples=5, direction_weights={0: 5.0}):
