@@ -46,7 +46,8 @@ class SefaExtension:
         w = self.generator.mapping(z, None)
         for idx, weight in direction_weights.items():
             direction = torch.tensor(self.directions[idx], device=self.device).float()
-            w = w + weight * direction.unsqueeze(0).unsqueeze(1)
+            direction_reshaped = direction[:self.num_layers * self.latent_dim].reshape(self.num_layers, self.latent_dim)
+            w = w + weight * direction_reshaped.unsqueeze(0)
         return w
 
     def generate_images(self, num_samples=5, direction_weights={0: 5.0}):
