@@ -95,8 +95,8 @@ class SefaExtension:
         sliders = [
             widgets.FloatSlider(
                 value=0.0,
-                min=-10.0,
-                max=10.0,
+                min=-5.0,
+                max=5.0,
                 step=0.5,
                 description=direction_labels.get(i, f"Dir {i}"),
                 style={'description_width': 'initial'}, 
