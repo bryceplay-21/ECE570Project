@@ -92,7 +92,15 @@ class SefaExtension:
         return results
 
     def launch_interactive_ui(self, num_directions=3):
-        sliders = [widgets.FloatSlider(value=0.0, min=-10.0, max=10.0, step=0.5, description=f'Dir {i}') for i in range(num_directions)]
+        direction_labels = {0: "Pose", 1: "Age", 2: "Smile"}
+
+        sliders = [
+            widgets.FloatSlider(
+                value=0.0, min=-3.0, max=3.0, step=0.5,
+                description=f'{direction_labels.get(i, f"Dir {i}")}'
+            )
+            for i in range(num_directions)
+        ]
         button = widgets.Button(description="Generate Image")
         output = widgets.Output()
 
