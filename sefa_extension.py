@@ -7,7 +7,7 @@ from torchvision.utils import save_image
 import matplotlib.pyplot as plt
 import ipywidgets as widgets
 from IPython.display import display
-import timm  # For pretrained classifiers
+import timm  
 import torch.nn.functional as F
 from collections import Counter
 
@@ -45,12 +45,10 @@ class SefaExtension:
     def edit_latent_code(self, z, direction_weights):
         w = self.generator.mapping(z, None)
         batch, num_layers, latent_dim = w.shape
-        flattened_w = w.view(batch, -1)  # e.g., [1, 9216]
+        flattened_w = w.view(batch, -1) 
     
         for idx, weight in direction_weights.items():
             direction = torch.tensor(self.directions[idx], device=self.device).float()
-    
-            # Ensure both tensors match in size
             min_len = min(flattened_w.shape[1], direction.shape[0])
             direction = direction[:min_len]
             flattened_w[:, :min_len] += weight * direction.unsqueeze(0)
