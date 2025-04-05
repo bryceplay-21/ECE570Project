@@ -9,6 +9,7 @@ import ipywidgets as widgets
 from IPython.display import display
 import timm  # For pretrained classifiers
 import torch.nn.functional as F
+from collections import Counter
 
 class SefaExtension:
     def __init__(self, generator, device='cuda'):
@@ -23,6 +24,9 @@ class SefaExtension:
         for name, mod in self.generator.named_modules():
             if 'affine' in name and hasattr(mod, 'weight'):
                 weight_list.append(mod.weight.data.cpu().numpy())
+        shapes = [w.shape[0] for w in weight_list]
+        common_shape = Counter(shapes).most_common(1)[0][0]
+        weight_list = [w for w in weight_list if w.shape[0] == common_shape]
         W = np.concatenate(weight_list, axis=1)
         return W
 
