@@ -1,0 +1,50 @@
+!apt-get install ninja-build
+!git clone https://github.com/bryceplay-21/ECE570Project.git
+%cd ECE570Project
+!pip install torch torchvision numpy pillow matplotlib scikit-learn ipywidgets timm gdown
+!mkdir pretrained
+!wget -O pretrained/ffhq.pkl https://nvlabs-fi-cdn.nvidia.com/stylegan2-ada-pytorch/pretrained/ffhq.pkl
+
+import sys
+sys.path.append('.')
+from sefa_extension import SefaExtension, SimpleAttributeClassifier
+import legacy
+import dnnlib
+import torch
+
+device = 'cuda' if torch.cuda.is_available() else 'cpu'
+network_pkl = 'pretrained/ffhq.pkl'
+with dnnlib.util.open_url(network_pkl) as f:
+    G = legacy.load_network_pkl(f)['G_ema'].to(device)
+
+sefa = SefaExtension(G, device=device)
+print("Running SVD to extract semantic directions...")
+sefa.perform_svd(num_components=10)
+print("Launching Interactive UI")
+sefa.launch_interactive_ui(num_directions=3)
+
+import torch.nn.functional as F
+classifier = SimpleAttributeClassifier().to(device)
+
+for i in range(3):
+    print(f"\nTesting Direction {i}...")
+    results = sefa.evaluate_attribute_change(classifier, direction_idx=i, steps=[-5, 0, 5])
+    probs = {k: F.softmax(torch.tensor(v), dim=1).numpy() for k, v in results.items()}
+    print("Probabilities:", probs)
+
+from PIL import Image
+import matplotlib.pyplot as plt
+
+direction_labels = {0: "Pose(Head Left -> Head Right)", 1: "Age(Old -> Young)", 2: "Smile(Smile -> Neutral)"}
+
+for i in range(3):
+    sefa.visualize_latent_variation(direction_idx=i, num_steps=7, scale_range=(-5, 5))
+    img = Image.open(f'sefa_direction_{i}.png')
+    plt.figure(figsize=(12, 4))
+    title = f"Direction {i} - {direction_labels.get(i, 'Unknown')}"
+    plt.title(title)
+    plt.axis('off')
+    plt.imshow(img)
+    plt.show()
+
+!pip freeze > requirements.txt
